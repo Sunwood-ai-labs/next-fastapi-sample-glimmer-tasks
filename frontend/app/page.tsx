@@ -3,54 +3,102 @@
 import { useState, useEffect } from 'react';
 import Image from "next/image";
 
+/**
+ * タスクの型定義
+ */
 interface Task {
   id: number;
   title: string;
   completed: boolean;
 }
 
+/**
+ * GlimmerTasksのメインコンポーネント
+ * タスクの一覧表示、追加、削除、完了状態の切り替えを管理します
+ */
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
+  /**
+   * タスク一覧を取得します
+   */
   const fetchTasks = async () => {
-    const response = await fetch('http://localhost:8000/api/tasks');
-    const data = await response.json();
-    setTasks(data);
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks');
+      if (!response.ok) throw new Error('タスクの取得に失敗しました');
+      const data = await response.json();
+      setTasks(data);
+      setError(null);
+    } catch (err) {
+      setError('タスクの取得中にエラーが発生しました');
+      console.error(err);
+    }
   };
 
+  /**
+   * 新しいタスクを追加します
+   */
   const addTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
-    const response = await fetch('http://localhost:8000/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: newTaskTitle })
-    });
-    const newTask = await response.json();
-    setTasks([...tasks, newTask]);
-    setNewTaskTitle('');
+    try {
+      const response = await fetch('http://localhost:8000/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTaskTitle })
+      });
+      if (!response.ok) throw new Error('タスクの追加に失敗しました');
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+      setNewTaskTitle('');
+      setError(null);
+    } catch (err) {
+      setError('タスクの追加中にエラーが発生しました');
+      console.error(err);
+    }
   };
 
+  /**
+   * タスクの完了状態を切り替えます
+   */
   const toggleTask = async (taskId: number, completed: boolean) => {
-    await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !completed })
-    });
-    fetchTasks();
+    try {
+      const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !completed })
+      });
+      if (!response.ok) throw new Error('タスクの更新に失敗しました');
+      await fetchTasks();
+      setError(null);
+    } catch (err) {
+      setError('タスクの更新中にエラーが発生しました');
+      console.error(err);
+    }
   };
 
+  /**
+   * タスクを削除します
+   */
   const deleteTask = async (taskId: number) => {
-    await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
-      method: 'DELETE'
-    });
-    setTasks(tasks.filter(task => task.id !== taskId));
+    try {
+      const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('タスクの削除に失敗しました');
+      setTasks(tasks.filter(task => task.id !== taskId));
+      setError(null);
+    } catch (err) {
+      setError('タスクの削除中にエラーが発生しました');
+      console.error(err);
+    }
   };
 
   const incompleteTasks = tasks.filter(task => !task.completed);
@@ -64,6 +112,12 @@ export default function Home() {
             GlimmerTasks
           </h1>
           
+          {error && (
+            <div className="mb-4 p-4 bg-red-500/20 backdrop-blur-sm border border-red-500/30 rounded-lg text-white">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={addTask} className="mb-8">
             <div className="flex gap-4">
               <input
@@ -149,7 +203,7 @@ export default function Home() {
       </div>
 
       {/* 装飾的な背景要素 */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
         <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
