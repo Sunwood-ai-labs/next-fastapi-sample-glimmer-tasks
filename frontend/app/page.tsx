@@ -57,10 +57,12 @@ export default function Home() {
   const completedTasks = tasks.filter(task => task.completed);
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="glass-container rounded-lg p-8 mb-8">
-          <h1 className="text-3xl font-bold text-white mb-8 text-center">GlimmerTasks</h1>
+    <main className="min-h-screen p-8 relative overflow-hidden">
+      <div className="max-w-2xl mx-auto relative z-10">
+        <div className="glass-container rounded-xl p-8 mb-8">
+          <h1 className="text-4xl font-bold text-white mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+            GlimmerTasks
+          </h1>
           
           <form onSubmit={addTask} className="mb-8">
             <div className="flex gap-4">
@@ -69,61 +71,71 @@ export default function Home() {
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 placeholder="新しいタスクを入力..."
-                className="flex-1 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/25 focus:border-white/30 transition-all duration-300"
               />
               <button
                 type="submit"
-                className="px-6 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors"
+                className="gradient-button px-6 py-3 rounded-xl text-white font-medium hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!newTaskTitle.trim()}
               >
                 追加
               </button>
             </div>
           </form>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">未完了のタスク</h2>
+              <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center">
+                <span className="mr-2">📝</span> 未完了のタスク
+              </h2>
               <div className="space-y-3">
                 {incompleteTasks.map(task => (
-                  <div key={task.id} className="glass-card rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <div key={task.id} className="glass-card rounded-xl p-4 flex items-center justify-between group">
+                    <div className="flex items-center gap-3 flex-1">
                       <input
                         type="checkbox"
                         checked={task.completed}
                         onChange={() => toggleTask(task.id, task.completed)}
-                        className="w-5 h-5 rounded border-white/30"
+                        className="checkbox-custom"
                       />
-                      <span className="text-white">{task.title}</span>
+                      <span className="text-white/90 font-medium">{task.title}</span>
                     </div>
                     <button
                       onClick={() => deleteTask(task.id)}
-                      className="text-white/70 hover:text-white"
+                      className="text-white/40 hover:text-white/90 transition-colors duration-200 opacity-0 group-hover:opacity-100 p-1"
                     >
                       ✕
                     </button>
                   </div>
                 ))}
+                {incompleteTasks.length === 0 && (
+                  <div className="text-white/50 text-center py-4">
+                    未完了のタスクはありません
+                  </div>
+                )}
               </div>
             </section>
 
             {completedTasks.length > 0 && (
               <section>
-                <h2 className="text-xl font-semibold text-white mb-4">完了したタスク</h2>
+                <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center">
+                  <span className="mr-2">✨</span> 完了したタスク
+                </h2>
                 <div className="space-y-3">
                   {completedTasks.map(task => (
-                    <div key={task.id} className="glass-card rounded-lg p-4 flex items-center justify-between opacity-70">
-                      <div className="flex items-center gap-3">
+                    <div key={task.id} className="glass-card rounded-xl p-4 flex items-center justify-between group opacity-60 hover:opacity-80 transition-opacity duration-200">
+                      <div className="flex items-center gap-3 flex-1">
                         <input
                           type="checkbox"
                           checked={task.completed}
                           onChange={() => toggleTask(task.id, task.completed)}
-                          className="w-5 h-5 rounded border-white/30"
+                          className="checkbox-custom"
                         />
-                        <span className="text-white line-through">{task.title}</span>
+                        <span className="text-white/90 line-through">{task.title}</span>
                       </div>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-white/70 hover:text-white"
+                        className="text-white/40 hover:text-white/90 transition-colors duration-200 opacity-0 group-hover:opacity-100 p-1"
                       >
                         ✕
                       </button>
@@ -134,6 +146,13 @@ export default function Home() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 装飾的な背景要素 */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
     </main>
   );
