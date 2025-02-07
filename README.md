@@ -1,5 +1,7 @@
 <div align="center">
 
+![Image](https://github.com/user-attachments/assets/e418310d-2355-4dab-aefb-8bda1eaca3d5)
+
 # GlimmerTasks
 
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
