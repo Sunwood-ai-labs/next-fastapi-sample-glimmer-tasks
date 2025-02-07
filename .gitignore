@@ -42,3 +42,5 @@ npm-debug.log*
 # Database
 *.db
 *.sqlite3
+.SourceSageAssets
+issue_creator.log
